@@ -5,6 +5,7 @@ import scala.concurrent.duration._
 
 import ayai.gamestate.{RoomWorld, RoomList, AddWorld, GetWorldsByIds}
 import ayai.apps.Constants
+import ayai.systems.ai.RootAIComponent
 
 /** Akka Imports **/
 import akka.actor.{Actor, ActorRef, Props}
@@ -18,7 +19,7 @@ import scala.concurrent.duration._
 
 case class ExpandRoom(room: RoomWorld)
 
-class WorldGenerator() extends Actor {
+class WorldGenerator() extends Actor with RootAIComponent {
   implicit val timeout = Timeout(Constants.NETWORK_TIMEOUT seconds)
   val mapGenerator = context.system.actorOf(Props[MapGenerator], name="MapGenerator")
 

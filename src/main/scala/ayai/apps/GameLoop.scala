@@ -6,9 +6,11 @@ import ayai.persistence._
 import ayai.gamestate._
 import ayai.factories._
 import ayai.systems.mapgenerator.{WorldGenerator, ExpandRoom}
+import ayai.systems.ai.RootAIComponent
+import ayai.gameconfig.GameConfiguration
 
 /** Akka Imports **/
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory
 object GameLoop {
 
   private lazy val log = LoggerFactory.getLogger(getClass)
+  private val gameConfiguration = new GameConfiguration
 
   var running: Boolean = true
 
@@ -62,7 +65,14 @@ object GameLoop {
     val classMap = networkSystem.actorOf(Props[ClassMap], name="ClassMap")
     val questMap = networkSystem.actorOf(Props[QuestMap], name="QuestMap")
     val worldFactory = networkSystem.actorOf(Props[WorldFactory], name="WorldFactory")
-    val worldGenerator = networkSystem.actorOf(Props[WorldGenerator], name="WorldGenerator")
+
+
+    // Testing the World Generator using the Game Configuration file...
+    val worldGenerator = networkSystem.actorOf(Props(
+      gameConfiguration.getClassForAIComponent("MapGeneration")
+    ), name="WorldGenerator")
+
+
     val effectMap = networkSystem.actorOf(Props[EffectMap], name="EffectMap")
     val spriteSheetMap = networkSystem.actorOf(Props[SpriteSheetMap], name="SpriteSheetMap")
     val npcMap = networkSystem.actorOf(Props[NPCMap], name="NPCMap")
