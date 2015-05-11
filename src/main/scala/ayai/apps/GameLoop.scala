@@ -71,6 +71,8 @@ object GameLoop {
     val worldGenerator = networkSystem.actorOf(Props(
       gameConfiguration.getClassForAIComponent("MapGeneration")
     ), name="WorldGenerator")
+    
+    println("Acquited world generator class: %s".format(worldGenerator.toString))
 
 
     val effectMap = networkSystem.actorOf(Props[EffectMap], name="EffectMap")

@@ -28,10 +28,21 @@ class GameConfiguration {
   private val gameConfigurationFile = fetchGameConfigurationFile()
 
   def getClassForAIComponent(aiComponentName: String): Class[_ <: RootAIComponent] = {
-    aiComponentName match {
-      case "MapGeneration" => Class.forName(aiComponentName).asInstanceOf[Class[_ <: RootAIComponent]]
+    
+    def getClassName(str: String): Class[_ <: RootAIComponent] = {
+      Class.forName(str).asInstanceOf[Class[_ <: RootAIComponent]]
+    }
+
+    println("Finding and constructing AI component based on provided component name: %s".format(aiComponentName))
+    
+    val component = aiComponentName match {
+      case "MapGeneration" => Class.forName(gameConfigurationFile.mapGeneration).asInstanceOf[Class[_ <: RootAIComponent]]
       case _ => throw new GameConfigurationException("The AI component " + aiComponentName + " does not exist.")
     }
+
+    println("Instantiated AI component of type: %s".format(component.toString))
+
+    component
   }
   
   private def fetchGameConfigurationFile(): GameConfigurationFile = {
