@@ -7,6 +7,7 @@ import ayai.apps._
 import ayai.networking._
 import ayai.systems.mapgenerator.ExpandRoom
 import ayai.maps.TransportInfo
+import ayai.gameconfig.GameConfiguration
 
 /** Crane Imports **/
 import crane.{Entity,EntityProcessingSystem}
@@ -17,7 +18,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 /** Akka Imports **/
-import akka.actor.ActorSystem
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -55,6 +56,10 @@ extends EntityProcessingSystem(include = List(classOf[Room], classOf[Position], 
                                exclude = List(classOf[Respawn])) {
   implicit val timeout = Timeout(Constants.NETWORK_TIMEOUT seconds)
   private val log = LoggerFactory.getLogger(getClass)
+  
+  private val gameConfiguration = new GameConfiguration
+  val networkSystem = ActorSystem("NetworkSystem")
+  
   //this will only move characters who have received a movement key and the current component is still set to True
   override def processEntity(e: Entity, delta : Int) {
   (e.getComponent(classOf[Room]),
@@ -77,7 +82,13 @@ extends EntityProcessingSystem(include = List(classOf[Room], classOf[Position], 
 
             if (newWorld.isLeaf) {
               //Generate all of its children
-              val worldGenerator = actorSystem.actorSelection("user/WorldGenerator")
+              
+              // This was originally not dynamic, but we're introducing dynamic worldGeneration method selection
+              // in the game config. (val worldGenerator = actorSystem.actorSelection("user/WorldGenerator"))
+              val worldGenerator = networkSystem.actorOf(Props(
+                gameConfiguration.getClassForAIComponent("MapGeneration")
+              ), name="WorldGenerator")
+              println("Acquired world generator class: %s".format(worldGenerator.toString))
               worldGenerator ! new ExpandRoom(newWorld)
               newWorld.isLeaf = false
             }

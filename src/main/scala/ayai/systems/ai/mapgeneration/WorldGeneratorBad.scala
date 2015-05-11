@@ -17,9 +17,17 @@ import akka.util.Timeout
 import scala.concurrent.{Await, ExecutionContext, Promise, Future}
 import scala.concurrent.duration._
 
-case class ExpandRoom(room: RoomWorld)
 
-class WorldGenerator() extends Actor with RootAIComponent {
+// This is commented out here because it is defined in WorldGenerator. In general, configurable
+// ai components should not clash.
+
+// case class ExpandRoom(room: RoomWorld)
+
+
+// This file is only for testing. It's a copy of WorldGenerator but produces slightly different maps
+// for demonstrating functionality of the GameConfiguration file.
+
+class WorldGeneratorBad() extends Actor with RootAIComponent {
   implicit val timeout = Timeout(Constants.NETWORK_TIMEOUT seconds)
   val mapGenerator = context.system.actorOf(Props[MapGenerator], name="MapGenerator")
 
@@ -40,7 +48,7 @@ class WorldGenerator() extends Actor with RootAIComponent {
   }
 
   def buildRoom(id: Int) = {
-    val roomSize = 50
+    val roomSize = 75
     val future = mapGenerator ? new CreateMap(id, roomSize, roomSize)
     
     println("Building a %s by %s room.".format(roomSize, roomSize))

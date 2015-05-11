@@ -71,8 +71,7 @@ object GameLoop {
     val worldGenerator = networkSystem.actorOf(Props(
       gameConfiguration.getClassForAIComponent("MapGeneration")
     ), name="WorldGenerator")
-    
-    println("Acquited world generator class: %s".format(worldGenerator.toString))
+    println("Acquired world generator class: %s".format(worldGenerator.toString))
 
 
     val effectMap = networkSystem.actorOf(Props[EffectMap], name="EffectMap")
@@ -104,6 +103,7 @@ object GameLoop {
     val futureOfRoom0 = roomList ? GetWorldById(0)
     Await.result(futureOfRoom0, timeout.duration) match {
       case Some(room: RoomWorld) =>
+        println("Expaing room now...")
         worldGenerator ! ExpandRoom(room)
       case _ => println("Cannot find room 0.")
     }

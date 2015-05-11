@@ -17,7 +17,7 @@ import scala.io.Source
  * is used to configure the AI portions of the codebase.
  */
 object GameConfiguration {
-  private val DEFAULT_MAP_GENERATION = "ayai.systems.mapgenerator.WorldGeneratorBad"
+  private val DEFAULT_MAP_GENERATION = "ayai.systems.mapgenerator.WorldGenerator"
 }
 
 case class GameConfigurationFile(mapGeneration: String)
@@ -25,7 +25,7 @@ case class GameConfigurationException(msg: String) extends Throwable(msg)
 
 class GameConfiguration {
   private val CONFIGURATION_FILE_NAME = "gameconfig.ayai"
-  private val gameConfigurationFile = fetchGameConfigurationFile()
+  private def gameConfigurationFile = fetchGameConfigurationFile()
 
   def getClassForAIComponent(aiComponentName: String): Class[_ <: RootAIComponent] = {
     

@@ -1,5 +1,5 @@
 {
     "ai": {
-        "MapGeneration": "ayai.systems.mapgenerator.WorldGenerator"
+        "MapGeneration": "ayai.systems.mapgenerator.WorldGeneratorBad"
     }
 }
