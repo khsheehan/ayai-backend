@@ -17,7 +17,7 @@ import scala.io.Source
  * is used to configure the AI portions of the codebase.
  */
 object GameConfiguration {
-  private val DEFAULT_MAP_GENERATION = "WorldGenerator"
+  private val DEFAULT_MAP_GENERATION = "ayai.systems.mapgenerator.WorldGeneratorBad"
 }
 
 case class GameConfigurationFile(mapGeneration: String)
@@ -33,7 +33,7 @@ class GameConfiguration {
       Class.forName(str).asInstanceOf[Class[_ <: RootAIComponent]]
     }
 
-    println("Finding and constructing AI component based on provided component name: %s".format(aiComponentName))
+    println("Finding and constructing AI component based on provided component name: %s - %s".format(aiComponentName, gameConfigurationFile.mapGeneration))
     
     val component = aiComponentName match {
       case "MapGeneration" => Class.forName(gameConfigurationFile.mapGeneration).asInstanceOf[Class[_ <: RootAIComponent]]
@@ -46,6 +46,8 @@ class GameConfiguration {
   }
   
   private def fetchGameConfigurationFile(): GameConfigurationFile = {
+    implicit val formats = net.liftweb.json.DefaultFormats
+    
     val file = Source.fromFile(new File("src/main/resources/" + CONFIGURATION_FILE_NAME))
     val aiConfiguration = parse(file.mkString).
       extract[JObject].
@@ -57,7 +59,7 @@ class GameConfiguration {
     file.close()
     
     GameConfigurationFile(
-      mapGeneration = aiConfiguration.get("mapGeneration").getOrElse(GameConfiguration.DEFAULT_MAP_GENERATION)
+      mapGeneration = aiConfiguration.get("MapGeneration").getOrElse(GameConfiguration.DEFAULT_MAP_GENERATION)
     )
   }
 }
